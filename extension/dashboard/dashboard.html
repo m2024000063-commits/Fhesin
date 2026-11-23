@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>حصن — لوحة مؤشرات التهديدات</title>
+<link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+<header class="topbar">
+  <img src="../icons/icon48.png" alt="" width="36" height="36">
+  <div>
+    <h1>حصن — لوحة مؤشرات التهديدات</h1>
+    <p class="sub">Threat Intelligence — كل البيانات محلية ولا تخرج من هذا الجهاز</p>
+  </div>
+  <div class="topbar-actions">
+    <button id="exportJson" class="btn-light">تصدير JSON</button>
+    <button id="exportCsv" class="btn-light">تصدير CSV</button>
+    <button id="clearBtn" class="btn-danger-light">مسح البيانات</button>
+  </div>
+</header>
+
+<main>
+  <!-- بطاقات الإحصاءات -->
+  <section class="stat-grid">
+    <div class="stat-card"><b id="stTotal">0</b><span>إجمالي الفحوصات</span></div>
+    <div class="stat-card green"><b id="stSafe">0</b><span>آمنة</span></div>
+    <div class="stat-card amber"><b id="stCaution">0</b><span>مشبوهة</span></div>
+    <div class="stat-card red"><b id="stDanger">0</b><span>خطرة</span></div>
+    <div class="stat-card dark"><b id="stBlocked">0</b><span>حُجبت قبل الفتح</span></div>
+    <div class="stat-card dark"><b id="stReports">0</b><span>بلاغات المستخدم</span></div>
+  </section>
+
+  <!-- التوزيع + الحملات -->
+  <section class="two-col">
+    <div class="panel">
+      <h2>توزيع التصنيفات</h2>
+      <div id="dist" class="dist"></div>
+    </div>
+    <div class="panel">
+      <h2>حملات مشتبه بها (تجميع حسب النطاق)</h2>
+      <p class="hint">النطاقات التي رُصدت أكثر من مرة بمستوى «مشبوه/خطر» — مرشحة كمؤشرات حملة احتيالية.</p>
+      <table id="campaigns" class="tbl">
+        <thead><tr><th>النطاق</th><th>الرصدات</th><th>أعلى درجة</th><th>التصنيف</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- سجل الفحوصات -->
+  <section class="panel">
+    <h2>سجل الفحوصات الأخيرة</h2>
+    <div class="filters">
+      <button class="filter active" data-f="all">الكل</button>
+      <button class="filter f-red" data-f="danger">خطر</button>
+      <button class="filter f-amber" data-f="caution">مشبوه</button>
+      <button class="filter f-green" data-f="safe">آمن</button>
+    </div>
+    <div class="tbl-scroll">
+      <table id="logTable" class="tbl">
+        <thead><tr><th>الوقت</th><th>الرابط / النطاق</th><th>الدرجة</th><th>التصنيف</th><th>أسباب التحذير</th><th>الإجراء</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- البلاغات -->
+  <section class="panel">
+    <h2>بلاغات المستخدم (تُرسل يدوياً للجهات المختصة)</h2>
+    <div class="tbl-scroll">
+      <table id="reportsTable" class="tbl">
+        <thead><tr><th>الوقت</th><th>الرابط المبلغ عنه</th><th>التصنيف وقت البلاغ</th><th>ملاحظة</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script src="dashboard.js"></script>
+</body>
+</html>

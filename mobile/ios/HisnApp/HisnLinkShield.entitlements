@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!--
+      صلاحيات حصن على iOS — انظر mobile/ios/README.md:
+      1) com.apple.developer.message-filter:
+         تُمنح فقط بعد موافقة Apple على طلب التصفية الرسمي (نموذج Request
+         Access to the SMS and MMS Filtering Entitlement) — حصة paid account.
+      2) com.apple.developer.web-browser:
+         صلاحية «تطبيق المتصفح» لظهور خيار التعيين افتراضياً (iOS 14+).
+         تُطلب من Developer Portal كمطلب مخصص أيضاً.
+      احذف أي مفتاح لم تُمنح صلاحيته بعد حتى لا يفشل التوقيع.
+    -->
+    <key>com.apple.developer.message-filter</key>
+    <true/>
+    <key>com.apple.developer.web-browser</key>
+    <true/>
+</dict>
+</plist>

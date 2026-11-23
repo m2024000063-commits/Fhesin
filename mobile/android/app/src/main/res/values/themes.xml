@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ثيمة التطبيق الرئيسية — الواجهات بدون AndroidX (Activity خام) -->
+    <style name="ThemeHisn" parent="android:Theme.Material.NoActionBar">
+        <item name="android:colorPrimary">@color/hisn_green</item>
+        <item name="android:colorPrimaryDark">@color/hisn_bg</item>
+        <item name="android:windowBackground">@color/hisn_bg</item>
+        <item name="android:statusBarColor">@color/hisn_bg</item>
+        <item name="android:navigationBarColor">@color/hisn_bg</item>
+    </style>
+
+    <!-- ثيمة شفافة لـ InterceptorActivity: لا تظهر إلا لحظة الفحص القصيرة
+         ثم تُمرَّر إلى المتصفح الحقيقي — المستخدم لا يكاد يلاحظها -->
+    <style name="ThemeHisn.Transparent">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.5</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+</resources>

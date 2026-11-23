@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>حصن — افحص أي رابط قبل أن تخدعك</title>
+<meta name="description" content="حصن: جدار فحص تلقائي بينك وبين الروابط الاحتيالية — مقارنة فورية بين الرابط المشبوه والموقع الرسمي، إضافة صامتة تلسم كل رابط قبل لمسه، معترض روابط وسيط، مراقب إشعارات، وفلتر SMS على iPhone.">
+<meta name="theme-color" content="#0a0f1e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon180.png">
+<link rel="icon" href="icons/icon192.png" type="image/png">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0f1e; --card: #101a33; --card2: #0a1226; --line: #1e2f52;
+  --txt: #e2e8f0; --dim: #8fa3c8; --faint: #64748b;
+  --green: #16a34a; --amber: #d97706; --red: #dc2626; --blue: #7dd3fc;
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, Arial, sans-serif;
+  direction: rtl; color: var(--txt); min-height: 100vh;
+  background: radial-gradient(900px 520px at 50% -12%, #12305e, var(--bg) 62%);
+}
+.wrap { max-width: 640px; margin: 0 auto; padding: 0 16px 70px; }
+
+/* ===== الترويسة ===== */
+header {
+  position: sticky; top: 0; z-index: 20;
+  background: rgba(10, 15, 30, .82); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.hbar { max-width: 640px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
+.logo { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #0b2447, #19376d); border: 1px solid #2c4a7c; display: flex; align-items: center; justify-content: center; font-size: 17px; flex: 0 0 auto; }
+.hbar b { font-size: 15px; }
+.hbar small { display: block; color: var(--dim); font-size: 11px; font-weight: 400; }
+
+/* ===== البطل ===== */
+.hero { text-align: center; padding: 34px 0 8px; }
+.hero h1 { font-size: clamp(22px, 6.4vw, 30px); line-height: 1.5; }
+.hero h1 em { font-style: normal; color: var(--blue); }
+.hero p { color: var(--dim); font-size: clamp(13px, 3.6vw, 15px); margin-top: 8px; line-height: 1.9; }
+
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-top: 16px; }
+.card h2 { font-size: 16px; margin-bottom: 4px; }
+.card .sub { color: var(--dim); font-size: 12.5px; line-height: 1.8; margin-bottom: 12px; }
+
+/* ===== الفحص ===== */
+.row { display: flex; gap: 8px; }
+input[type=text] {
+  flex: 1; min-width: 0; background: var(--card2); border: 1px solid #24365c; color: var(--txt);
+  border-radius: 10px; padding: 12px 14px; font-size: 15px; direction: ltr; text-align: left; font-family: inherit;
+}
+input[type=text]:focus { outline: none; border-color: #2c4a7c; }
+select {
+  background: var(--card2); border: 1px solid #24365c; color: var(--txt);
+  border-radius: 10px; padding: 12px 12px; font-size: 13px; font-family: inherit;
+}
+select.wide { width: 100%; margin-top: 10px; }
+button.act {
+  background: #19376d; color: #fff; border: 0; border-radius: 10px;
+  padding: 12px 22px; font-size: 14.5px; font-weight: 700; cursor: pointer; font-family: inherit;
+}
+button.act:hover { background: #12305e; }
+button.act.wide { width: 100%; margin-top: 12px; }
+button.act[disabled], button.ghost[disabled] { opacity: .55; cursor: default; }
+.verdict.show { animation: vpop .35s ease; }
+@keyframes vpop { from { opacity: 0; transform: translateY(8px); } }
+button.ghost {
+  background: transparent; color: var(--blue); border: 1px solid #24365c; border-radius: 10px;
+  padding: 9px 14px; font-size: 12.5px; cursor: pointer; font-family: inherit;
+}
+label.lbl { display: block; font-size: 12.5px; color: #9fb4d8; margin: 0 0 6px; }
+.examples { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.examples span {
+  font-size: 11.5px; color: var(--dim); background: var(--card2); border: 1px solid var(--line);
+  border-radius: 999px; padding: 5px 12px; cursor: pointer; direction: ltr; unicode-bidi: embed;
+}
+.examples span:hover { color: var(--blue); border-color: #2c4a7c; }
+.loading { text-align: center; color: var(--blue); font-size: 13.5px; padding: 16px 0 4px; display: none; }
+.err { color: #f87171; font-size: 13px; margin-top: 10px; display: none; line-height: 1.7; }
+
+/* ===== النتيجة ===== */
+.verdict { display: none; }
+.verdict.show { display: block; }
+.v-head { display: flex; align-items: center; gap: 14px; }
+.gauge {
+  width: 78px; height: 78px; border-radius: 50%; flex: 0 0 auto;
+  background: conic-gradient(var(--faint) 0deg 0deg, #1e2f52 0deg 360deg);
+  display: flex; align-items: center; justify-content: center;
+}
+.gauge .hole { width: 58px; height: 58px; border-radius: 50%; background: var(--card); display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 800; }
+.chip { display: inline-block; padding: 4px 16px; border-radius: 999px; font-weight: 700; font-size: 14px; }
+.host { font-size: 12px; color: #9fb4d8; direction: ltr; unicode-bidi: embed; margin-top: 8px; word-break: break-all; text-align: right; }
+ul.reasons { margin: 14px 0 0; padding: 0; list-style: none; }
+ul.reasons li { font-size: 13px; line-height: 1.6; margin: 6px 0; background: var(--card2); border-inline-start: 3px solid #94a3b8; border-radius: 8px; padding: 8px 12px; color: #cdd9ee; }
+.actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+
+/* ===== المقارنة الفورية + زمن الفحص ===== */
+.timing { font-size: 11.5px; color: var(--dim); margin-top: 10px; }
+.cmp { margin-top: 14px; background: var(--card2); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+.cmp-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.cmp-row { display: flex; align-items: center; gap: 8px; margin: 7px 0; flex-wrap: wrap; }
+.cmp-tag { font-size: 12px; font-weight: 700; flex: 0 0 auto; }
+.cmp-bad .cmp-tag { color: #f87171; }
+.cmp-good .cmp-tag { color: #4ade80; }
+.cmp-host {
+  direction: ltr; unicode-bidi: embed; flex: 1; min-width: 200px;
+  font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; color: var(--txt);
+  background: #0a1226; border: 1px solid var(--line); border-radius: 8px;
+  padding: 6px 10px; overflow-wrap: anywhere;
+}
+.cmp-host mark { background: #dc2626; color: #fff; border-radius: 4px; padding: 0 3px; }
+.cmp-good .cmp-host mark { background: #16a34a; }
+.cmp-info { font-size: 12px; color: var(--dim); line-height: 1.9; margin-top: 8px; }
+.cmp-go {
+  display: inline-block; margin-top: 8px; font-size: 13px; font-weight: 700; color: #4ade80;
+  border: 1px solid #16a34a66; background: #16a34a14; border-radius: 10px;
+  padding: 8px 14px; text-decoration: none; direction: ltr; unicode-bidi: embed;
+}
+.cmp-go:hover { background: #16a34a28; }
+
+/* ===== السجل ===== */
+.hist { display: none; }
+.hist.show { display: block; }
+.hist ul { list-style: none; }
+.hist li { display: flex; align-items: center; gap: 10px; padding: 9px 4px; border-bottom: 1px solid var(--line); cursor: pointer; }
+.hist li:last-child { border-bottom: 0; }
+.hist .dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
+.hist .hurl { flex: 1; min-width: 0; font-size: 12.5px; direction: ltr; unicode-bidi: embed; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #cdd9ee; }
+.hist .hsc { font-size: 12px; font-weight: 700; }
+.hist .clear { margin-top: 10px; }
+
+/* ===== خطوات التثبيت ===== */
+.steps { counter-reset: st; list-style: none; }
+.steps li { counter-increment: st; position: relative; padding: 8px 40px 8px 0; font-size: 13.5px; line-height: 1.9; color: #d5dfef; }
+.steps li::before {
+  content: counter(st); position: absolute; right: 0; top: 10px;
+  width: 26px; height: 26px; border-radius: 50%; background: #19376d; color: #fff;
+  font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+}
+.steps code { background: var(--card2); border: 1px solid var(--line); border-radius: 6px; padding: 1px 7px; font-size: 12px; color: var(--blue); }
+.urlbox { display: flex; gap: 8px; margin: 10px 0 4px; }
+.urlbox code {
+  flex: 1; min-width: 0; background: var(--card2); border: 1px dashed #2c4a7c; border-radius: 10px;
+  padding: 10px 12px; font-size: 12.5px; color: var(--blue); direction: ltr; text-align: left;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: ui-monospace, Menlo, monospace;
+}
+.badge { display: inline-block; font-size: 11px; font-weight: 700; border-radius: 999px; padding: 3px 12px; margin-bottom: 10px; }
+.badge.rec { background: #16a34a22; color: #4ade80; border: 1px solid #16a34a66; }
+.badge.alt { background: #d9770622; color: #fbbf24; border: 1px solid #d9770666; }
+.note { font-size: 12px; color: var(--dim); line-height: 1.9; margin-top: 10px; }
+.note b { color: var(--blue); }
+.once { text-align: center; background: #16a34a14; border: 1px solid #16a34a44; border-radius: 12px; padding: 10px 14px; font-size: 13px; color: #bbf7d0; margin-top: 12px; }
+
+/* ===== قسم كروم ===== */
+.olite { margin: 8px 0 0; padding-right: 20px; font-size: 13.5px; line-height: 2; color: #d5dfef; }
+.olite code { background: var(--card2); border: 1px solid var(--line); border-radius: 6px; padding: 1px 7px; font-size: 12px; color: var(--blue); }
+
+footer { text-align: center; font-size: 11.5px; color: var(--faint); margin-top: 30px; line-height: 1.9; }
+
+@media (max-width: 420px) {
+  .v-head { gap: 10px; }
+  .gauge { width: 68px; height: 68px; }
+  .gauge .hole { width: 50px; height: 50px; font-size: 16px; }
+}
+
+/* ===== بطاقات البدائل الأربعة (بديل الاختصارات المحذوف) ===== */
+.alts { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+.altcard { border: 1px solid var(--line); background: var(--card2); border-radius: 14px; padding: 14px 16px; }
+.altcard.hot { border-color: var(--green); background: #16a34a10; }
+.alt-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+.alt-title { font-size: 15.5px; font-weight: 700; color: var(--txt); }
+.chip-plat { font-size: 10.5px; font-weight: 700; border-radius: 999px; padding: 2px 10px; background: #19376d; color: #bfdbfe; border: 1px solid #2c4a7c; }
+.alt-desc { font-size: 13px; color: #d5dfef; line-height: 1.9; }
+.alt-desc code { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 1px 7px; font-size: 12px; color: var(--blue); }
+.alt-path { margin: 8px 0 0; font-size: 12px; color: var(--dim); line-height: 1.8; }
+.alt-path b { color: #4ade80; }
+.gated { font-size: 11.5px; color: var(--faint); margin-top: 6px; }
+.urlbox { display: flex; gap: 8px; margin: 10px 0 4px; }
+.urlbox code {
+  flex: 1; min-width: 0; background: var(--bg); border: 1px dashed #2c4a7c; border-radius: 10px;
+  padding: 10px 12px; font-size: 12.5px; color: var(--blue); direction: ltr; text-align: left;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: ui-monospace, Menlo, monospace;
+}
+.badge { display: inline-block; font-size: 11px; font-weight: 700; border-radius: 999px; padding: 3px 12px; margin-bottom: 10px; }
+.badge.rec { background: #16a34a22; color: #4ade80; border: 1px solid #16a34a66; }
+.note { font-size: 12px; color: var(--dim); line-height: 1.9; margin-top: 10px; }
+.note b { color: var(--blue); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hbar">
+    <div class="logo">🏰</div>
+    <b>حصن<small>جدار الفحص بينك وبين الروابط الخطر</small></b>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <h1>افحص أي رابط <em>قبل فتحه</em></h1>
+    <p>يكشف مواقع البنوك والجهات المقلدة، والروابط المختصرة، وصفحات رمز التحقق الوهمية —
+       ويعطيك حكماً واضحاً بالعربية: آمن 🟢 / مشبوه 🟡 / خطر 🔴.</p>
+  </section>
+
+  <!-- الفحص المباشر -->
+  <section class="card">
+    <h2>جرّب الفحص الآن</h2>
+    <p class="sub">الصق أي رابط وحدد من أين وصلتك — سياق المصدر يدخل في التقييم.</p>
+    <label class="lbl" for="urlInput">الرابط:</label>
+    <div class="row">
+      <input type="text" id="urlInput" placeholder="https://..." spellcheck="false" autocomplete="off">
+      <button class="act" id="scanBtn">افحص</button>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <button class="ghost" id="pasteBtn" style="flex:1">📋 لصق من الحافظة وفحصه فوراً</button>
+    </div>
+    <label class="lbl" for="sourceSel" style="margin-top:12px">من أين وصلتك؟</label>
+    <select id="sourceSel" class="wide">
+      <option value="direct">كتبته مباشرة / فتحته من المتصفح</option>
+      <option value="message">رسالة (واتساب / SMS / تطبيق محادثة)</option>
+      <option value="search">نتيجة بحث أو إعلان</option>
+      <option value="maps">بطاقة خريطة (حجز / تواصل)</option>
+      <option value="clipboard">نسخته من أي تطبيق (فحص الحافظة)</option>
+      <option value="bookmark">زر المفضلة في Safari</option>
+    </select>
+    <div class="examples">
+      <span data-url="https://emiratesnbd-secure-verify.com/login">مثال: بنك مقلد</span>
+      <span data-url="https://bit.ly/gift-prize">مثال: رابط مختصر</span>
+      <span data-url="https://www.emiratesnbd.com">مثال: موقع رسمي</span>
+    </div>
+    <div id="loading" class="loading" role="status">جارٍ الفحص متعدد الطبقات…</div>
+    <div id="err" class="err" role="alert"></div>
+  </section>
+
+  <!-- النتيجة -->
+  <section id="verdict" class="card verdict" aria-live="polite">
+    <div class="v-head">
+      <div class="gauge" id="gauge"><div class="hole"><span id="scoreNum">—</span></div></div>
+      <div>
+        <span id="levelChip" class="chip">—</span>
+        <div class="host" id="hostLine"></div>
+      </div>
+    </div>
+    <ul class="reasons" id="reasons"></ul>
+    <div class="timing" id="timingLine"></div>
+    <div class="cmp" id="compareCard" style="display:none">
+      <div class="cmp-title">⚖️ المقارنة الفورية: الرابط المشبوه مقابل الموقع الرسمي</div>
+      <div id="cmpRows"></div>
+      <div class="cmp-info" id="cmpInfo"></div>
+      <a id="cmpLink" class="cmp-go" target="_blank" rel="noopener noreferrer"></a>
+    </div>
+    <div class="actions">
+      <button class="ghost" id="shareBtn">📤 مشاركة الحكم مع مَن أرسل الرابط</button>
+      <button class="ghost" id="reportBtn">🚩 الإبلاغ عن هذا الرابط</button>
+      <button class="ghost" id="againBtn">فحص رابط آخر</button>
+    </div>
+  </section>
+
+  <!-- السجل -->
+  <section id="histCard" class="card hist">
+    <h2>آخر فحوصاتك</h2>
+    <p class="sub">محفوظة في جهازك فقط (localStorage).</p>
+    <ul id="histList"></ul>
+    <button class="ghost clear" id="histClear">مسح السجل</button>
+  </section>
+
+  <!-- البدائل الأربعة على الهاتف — بديل الاختصارات المحذوف -->
+  <section class="card" id="mobile">
+    <h2>📱 الحماية على الهاتف — أربعة بدائل نظامية</h2>
+    <p class="sub">بدائل موثوقة تعمل بآليات النظام الرسمية (لا ملفات اختصارات ولا تفعيلات هشة): الإضافة الصامتة للمتصفحات، معترض الروابط الوسيط، مراقب الإشعارات، وفلتر الرسائل النصية الرسمي على iPhone.</p>
+
+    <div class="alts">
+
+      <div class="altcard hot">
+        <div class="alt-head">
+          <span class="alt-title">1 · الإضافة الصامتة للمتصفح</span>
+          <span class="chip-plat">Android + iOS</span>
+        </div>
+        <div class="alt-desc">تعمل في الخلفية بمجرد تحميل أي صفحة: تقرأ كل الروابط الظاهرة على الشاشة — نتائج البحث والخرائط — وتضع بجانب كل رابط نقطة ملونة <b>قبل أن تلمسه</b>: 🟢 آمن / 🟡 مشبوه / 🔴 خطر. بلا نوافذ ولا أزرار — صمت كامل.</div>
+        <p class="alt-path"><b>Android:</b> Firefox أو Kiwi أو Edge ← ثبّت مجلد <code>extension/</code> (متغاير <code>manifest.v2.json</code> للمتصفحات الأقدم). <b>iOS:</b> بناء Safari Web Extension بـ Mac مرة واحدة — الدليل <code>safari-ios/README.md</code>.</p>
+      </div>
+
+      <div class="altcard">
+        <div class="alt-head">
+          <span class="alt-title">2 · معترض الروابط الذكي — المتصفح الوسيط</span>
+          <span class="chip-plat">Android + iOS</span>
+        </div>
+        <div class="alt-desc">عيّن حصن «متصفحاً افتراضياً»: أي رابط تضغطه في واتساب أو SMS أو الإيميل يمر أولاً عبر حصن في الخلفية — أجزاء من الثانية. آمن؟ يفتح فوراً في كروم/سفاري دون أن تشعر بشيء. خبيث؟ يُوقف الفتح وتظهر شاشة تحذير حمراء بالدرجة والأسباب والموقع الرسمي الصحيح.</div>
+        <p class="alt-path"><b>Android:</b> تطبيق Kotlin جاهز للبناء في <code>mobile/android/</code> — افتحه في Android Studio وثبّت الـ APK ثم عيّنه متصفحاً افتراضياً. <b>iOS:</b> <code>mobile/ios/</code> بـ Xcode + صلاحية تطبيق متصفح.</p>
+      </div>
+
+      <div class="altcard">
+        <div class="alt-head">
+          <span class="alt-title">3 · مراقب الإشعارات الفورية</span>
+          <span class="chip-plat">Android</span>
+        </div>
+        <div class="alt-desc">يراقب إشعارات الرسائل والتطبيقات فور وصولها؛ إذا احتوى الإشعار على رابط خبيث يرسل تنبيهاً تحذيرياً أحمر عالي الأولوية — <b>قبل أن تفتح الرسالة أصلاً</b>. لا يخزن نص أي إشعار: يستخرج الرابط، يفحصه، وينسى.</div>
+        <p class="alt-path"><b>Android:</b> نفس تطبيق <code>mobile/android/</code> ← زر «منح وصول الإشعارات» مرة واحدة ← انتهى.</p>
+        <p class="gated">لماذا لا يوجد على iPhone؟ لأن iOS تمنع قراءة إشعارات التطبيقات الأخرى مطلقاً — قيد نظامي صارم.</p>
+      </div>
+
+      <div class="altcard">
+        <div class="alt-head">
+          <span class="alt-title">4 · فلتر الرسائل النصية المدمج</span>
+          <span class="chip-plat">iPhone</span>
+        </div>
+        <div class="alt-desc">ميزة Apple الرسمية (Message Filtering): تطبيقك يفحص كل رسالة SMS من مرسل غير معروف في الخلفية — أي رسالة تحتوي رابط احتيالي تنتقل تلقائياً إلى مجلد <b>«الرسائل غير المرغوب فيها»</b> مع تنبيه النظام، دون أي تدخل منك.</div>
+        <p class="alt-path"><b>iOS:</b> <code>mobile/ios/MessageFilterExtension/</code> — بناء بـ Xcode + حساب Developer مدفوع + موافقة Apple على صلاحية message-filter (الخطوات كاملة في <code>mobile/ios/README.md</code>).</p>
+        <p class="gated">لماذا لا يوجد على Android؟ لأن أندرويد ألغى فلاتر SMS للتطبيقات منذ 4.4 — حصرها في تطبيق الرسائل الافتراضي.</p>
+      </div>
+    </div>
+
+    <div class="note" style="margin-top:14px"><b>القاعدة الموحدة:</b> كل بديل يفحص محلياً حتى دون إنترنت (قواعد مدمجة)، ومع توفر الشبكة يعزز الحكم بخادم <code>/api/scan</code> — الأسوأ بين النتيجتين يحسم.</div>
+  </section>
+
+  <!-- أداة فورية بلا تثبيت: زر المفضلة الذكي -->
+  <section class="card">
+    <h2>⚡ أداة فورية بلا تثبيت — زر المفضلة الذكي</h2>
+    <p class="sub">مكمل للبدائل الأربعة: نقرة واحدة أثناء التصفح تفحص الصفحة الحالية وتفتح النتيجة — تعمل في أي متصفح على أي جهاز اليوم.</p>
+    <p class="sub" style="margin-bottom:6px">انسخ هذا الكود:</p>
+    <div class="urlbox">
+      <code id="bmCode">…</code>
+      <button class="ghost" id="copyBm">نسخ</button>
+    </div>
+    <ol class="olite">
+      <li>أضف أي صفحة إلى <b>المفضلة</b> (زر المشاركة ← إضافة إلى المفضلة).</li>
+      <li>افتح المفضلة ← «تعديل» ← اضغط العنصر ← غيّر الاسم إلى <b>فحص هذا الرابط</b>.</li>
+      <li>امسح حقل الرابط والصق الكود المنسوخ واحفظ.</li>
+    </ol>
+  </section>
+
+  <!-- إضافة كروم -->
+  <section class="card" id="chrome">
+    <h2>🧩 الإضافة في متصفح Google Chrome — الجدار التلقائي</h2>
+    <p class="sub">جدار فحص يقع بين نقرتك وفتح الموقع: أي رابط يُفحص قبل اكتمال تحميله — حتى لو فتحته من تطبيق خارجي أو رسالة أو إعادة توجيه — وكل نطاق خطر يُكتشف يدخل «الجدار الصلب»: حجب فوري على مستوى الشبكة لأي محاولة وصول لاحقة.</p>
+    <ol class="olite">
+      <li>نزّل مستودع <b>hisn</b> من GitHub (زر <b>Code</b> ← Download ZIP) وفك الضغط.</li>
+      <li>افتح <code>chrome://extensions</code> وفعّل <b>وضع المطوّر</b> (Developer mode).</li>
+      <li>اضغط <b>Load unpacked</b> واختر مجلد <code>extension</code>.</li>
+      <li>اختياري: من إعدادات الإضافة فعّل <b>الخادم السحابي</b> والصق رابط هذا الموقع — يدمج الفحص السحابي مع المحلي.</li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>كيف يعمل الفحص؟</h2>
+    <ol class="olite">
+      <li><b>الالتقاط السياقي:</b> النطاق + مصدر الرابط (بحث / خريطة / رسالة) يدخل في التقييم.</li>
+      <li><b>فحص متعدد الطبقات:</b> انتحال أسماء الجهات، Typosquatting، الحروف المتشابهة بصرياً، المختصرات، الكلمات الخطرة، وصفحات OTP.</li>
+      <li><b>المقارنة الفورية:</b> عند اكتشاف انتحال يُعرض الرابط المشبوه مقابل الموقع الرسمي حرفاً بحرف — الجزء المزيَّف مضاءً بالأحمر والرسمي بالأخضر، مع زر مباشر للموقع الرسمي.</li>
+      <li><b>الجدار التلقائي:</b> الفحص يقع بين نقرة المستخدم وفتح الموقع، والنطاقات الخطرة تُضاف إلى جدار صلب يحجبها قبل أي تحميل لاحق — من أي مصدر.</li>
+      <li><b>حكم فوري:</b> درجة من 100 مع أسباب مكتوبة بلغة بسيطة، وبلاغ يدعم قاعدة مؤشرات التهديدات.</li>
+    </ol>
+  </section>
+
+  <footer>
+    <span id="engLine"></span><br>
+    الفحص القاعدي يعمل بقواعد محلية على الخادم دون تخزين بيانات شخصية.<br>
+    حصن — درع الروابط: إضافة صامتة + معترض وسيط + مراقب إشعارات + فلتر SMS
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var LEVELS = {
+    safe:    { text: 'آمن',    color: '#16a34a' },
+    caution: { text: 'مشبوه', color: '#d97706' },
+    danger:  { text: 'خطر',   color: '#dc2626' },
+    na:      { text: 'غير قابل للفحص', color: '#6b7280' }
+  };
+  var ORIGIN = location.origin;
+  var lastScan = null;
+  var scanCtl = null;
+
+  /* تعبئة كود زر المفضلة الذكي بعنوان الموقع الفعلي */
+  $('bmCode').textContent = "javascript:location.href='" + ORIGIN + "/?url='+encodeURIComponent(location.href)+'&source=bookmark'";
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function copyText(txt, btn) {
+    function done() {
+      var old = btn.textContent;
+      btn.textContent = 'تم النسخ ✓';
+      setTimeout(function () { btn.textContent = old; }, 1600);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(done).catch(function () { fallback(); });
+    } else { fallback(); }
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+  }
+  /* زر المفضلة الذكي — أداة فورية بلا تثبيت (ليست اختصاراً): */
+  $('copyBm').addEventListener('click', function () { copyText($('bmCode').textContent, this); });
+
+  /* ===== السجل المحلي ===== */
+  var HKEY = 'fs_history';
+  function getHist() {
+    try { return JSON.parse(localStorage.getItem(HKEY) || '[]'); } catch (e) { return []; }
+  }
+  function pushHist(v) {
+    var h = getHist().filter(function (x) { return x.url !== v.url; });
+    h.unshift({ url: v.url, host: v.registrable || v.host || v.url, score: v.score, level: v.level, ts: Date.now() });
+    if (h.length > 8) h.length = 8;
+    try { localStorage.setItem(HKEY, JSON.stringify(h)); } catch (e) {}
+    renderHist();
+  }
+  function renderHist() {
+    var h = getHist();
+    $('histCard').classList.toggle('show', h.length > 0);
+    var ul = $('histList');
+    ul.innerHTML = '';
+    h.forEach(function (x) {
+      var li = document.createElement('li');
+      var color = (LEVELS[x.level] || LEVELS.na).color;
+      li.innerHTML = '<span class="dot" style="background:' + color + '"></span>' +
+        '<span class="hurl">' + esc(x.host) + '</span>' +
+        '<span class="hsc" style="color:' + color + '">' + (x.level === 'na' ? '—' : x.score) + '</span>';
+      li.addEventListener('click', function () {
+        $('urlInput').value = x.url;
+        scan(x.url, $('sourceSel').value);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      ul.appendChild(li);
+    });
+  }
+  $('histClear').addEventListener('click', function () {
+    try { localStorage.removeItem(HKEY); } catch (e) {}
+    renderHist();
+  });
+
+  /* ===== الفحص ===== */
+  function render(v) {
+    var meta = LEVELS[v.level] || LEVELS.na;
+    var deg = Math.round((v.score || 0) * 3.6);
+    var g = $('gauge');
+    g.style.background = 'conic-gradient(' + meta.color + ' 0deg ' + deg + 'deg, #1e2f52 ' + deg + 'deg 360deg)';
+    $('scoreNum').textContent = (v.scannable === false) ? '—' : v.score;
+    $('scoreNum').style.color = meta.color;
+    var chip = $('levelChip');
+    chip.textContent = meta.text;
+    chip.style.background = meta.color + '26';
+    chip.style.color = meta.color;
+    chip.style.border = '1px solid ' + meta.color;
+    $('hostLine').textContent = (v.registrable || v.host || v.url || '');
+    var ul = $('reasons');
+    ul.innerHTML = '';
+    (v.reasons || []).forEach(function (r) {
+      var li = document.createElement('li');
+      li.style.borderInlineStartColor = r.weight > 0 ? '#f87171' : (r.weight < 0 ? '#4ade80' : '#94a3b8');
+      li.textContent = (r.weight > 0 ? '• ' : (r.weight < 0 ? '✓ ' : 'ℹ ')) + r.text +
+        (r.weight > 0 ? ' (+' + r.weight + ')' : '');
+      ul.appendChild(li);
+    });
+
+    var cmp = v.comparison;
+    var card = $('compareCard');
+    if (cmp) {
+      card.style.display = 'block';
+      var rows = $('cmpRows');
+      rows.innerHTML = '';
+      function cmpRow(label, prefix, mid, suffix, cls) {
+        var d = document.createElement('div');
+        d.className = 'cmp-row ' + cls;
+        var t = document.createElement('span');
+        t.className = 'cmp-tag';
+        t.textContent = label;
+        var c = document.createElement('code');
+        c.className = 'cmp-host';
+        c.appendChild(document.createTextNode(prefix));
+        if (mid) {
+          var m = document.createElement('mark');
+          m.textContent = mid;
+          c.appendChild(m);
+        }
+        c.appendChild(document.createTextNode(suffix));
+        d.appendChild(t);
+        d.appendChild(c);
+        rows.appendChild(d);
+      }
+      cmpRow('المشبوه:', cmp.diff.prefix, cmp.diff.fakeMid, cmp.diff.suffix, 'cmp-bad');
+      cmpRow('الرسمي:', cmp.diff.prefix, cmp.diff.officialMid, cmp.diff.suffix, 'cmp-good');
+      var go = $('cmpLink');
+      go.href = cmp.officialUrl;
+      go.textContent = 'افتح الموقع الرسمي الصحيح ↗ ' + cmp.officialHost;
+      $('cmpInfo').textContent = 'الجهة المنتحلة: ' + cmp.entity + ' — نمط الانتحال: ' + cmp.kindText +
+        (cmp.distance != null ? ' — بفارق ' + cmp.distance + ' حرف فقط' : '') +
+        (cmp.substituted && cmp.substituted.length
+          ? ' — حروف مُستبدلة: ' + cmp.substituted.map(function (s) { return s.from + '←' + s.to; }).join('، ')
+          : '');
+    } else {
+      card.style.display = 'none';
+    }
+    $('verdict').classList.add('show');
+    /* تمرير تلقائي إلى النتيجة — الحكم يظهر أمام المستخدم فوراً دون تمرير يدوي */
+    $('verdict').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    pushHist(v);
+  }
+
+  var ERRMAP = {
+    'missing url parameter': 'أدخل رابطاً أولاً ثم اضغط «افحص»'
+  };
+
+  function scan(url, source) {
+    if (scanCtl) scanCtl.abort();           /* فحص سابق معلّق؟ ألغِه — الأحدث يحسم */
+    scanCtl = new AbortController();
+    var btn = $('scanBtn');
+    btn.disabled = true; btn.textContent = 'جارٍ الفحص…';
+    $('err').style.display = 'none';
+    $('loading').style.display = 'block';
+    $('verdict').classList.remove('show');
+    $('compareCard').style.display = 'none';
+    fetch(ORIGIN + '/api/scan?url=' + encodeURIComponent(url) + '&source=' + encodeURIComponent(source || 'direct'), { signal: scanCtl.signal })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        btn.disabled = false; btn.textContent = 'افحص';
+        $('loading').style.display = 'none';
+        if (!j.ok) {
+          $('err').textContent = 'تعذر الفحص: ' + (ERRMAP[j.error] || j.error || 'خطأ غير معروف');
+          $('err').style.display = 'block';
+          return;
+        }
+        lastScan = j.verdict;
+        $('timingLine').textContent = (j.timing && typeof j.timing.ms === 'number')
+          ? '⚡ زمن الفحص: ' + j.timing.ms + ' مللي ثانية — فوري' : '';
+        render(j.verdict);
+      })
+      .catch(function (e) {
+        btn.disabled = false; btn.textContent = 'افحص';
+        $('loading').style.display = 'none';
+        if (e && e.name === 'AbortError') return;   /* فحص أحدث حلّ محل هذا الطلب */
+        $('err').textContent = 'تعذر الاتصال بالخادم — تحقق من الاتصال بالإنترنت ثم اضغط «افحص» مرة أخرى';
+        $('err').style.display = 'block';
+      });
+  }
+
+  function go() {
+    var v = $('urlInput').value.trim().replace(/^["'«»]+|["'«»]+$/g, '');
+    if (!v) return;
+    if (/\s/.test(v)) {
+      $('err').textContent = 'الرابط يحتوي فراغات — انسخه كاملاً دون فراغات ثم أعد الفحص';
+      $('err').style.display = 'block';
+      return;
+    }
+    if (!/^https?:\/\//i.test(v)) v = 'https://' + v;
+    scan(v, $('sourceSel').value);
+  }
+  $('scanBtn').addEventListener('click', go);
+  $('urlInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
+
+  /* اختصار لوحة المفاتيح: «/» ينقل التركيز إلى حقل الرابط */
+  document.addEventListener('keydown', function (e) {
+    if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey && document.activeElement !== $('urlInput')) {
+      e.preventDefault();
+      $('urlInput').focus();
+    }
+  });
+
+  /* زر اللصق السريع: قراءة الحافظة وفحصها فوراً بلا لصق يدوي */
+  $('pasteBtn').addEventListener('click', function () {
+    function fail(m) { $('err').textContent = m; $('err').style.display = 'block'; }
+    if (!navigator.clipboard || !navigator.clipboard.readText) {
+      fail('متصفحك لا يسمح بالقراءة من الحافظة — الصق الرابط يدوياً في الحقل ثم اضغط «افحص»');
+      return;
+    }
+    navigator.clipboard.readText().then(function (txt) {
+      txt = String(txt || '').trim();
+      if (!txt || /\s/.test(txt) || txt.indexOf('.') === -1) {
+        fail('الحافظة لا تحتوي رابطاً صالحاً — الصق الرابط يدوياً في الحقل ثم اضغط «افحص»');
+        return;
+      }
+      $('urlInput').value = txt;
+      go();
+    }).catch(function () {
+      fail('رُفض إذن قراءة الحافظة — الصق الرابط يدوياً في الحقل ثم اضغط «افحص»');
+    });
+  });
+
+  document.querySelectorAll('.examples span').forEach(function (el) {
+    el.addEventListener('click', function () {
+      $('urlInput').value = el.getAttribute('data-url');
+      go();
+    });
+  });
+
+  /* نص الحكم الجاهز للمشاركة — يرسله المستخدم لمن أرسل له الرابط كتحذير مباشر */
+  function verdictText(v) {
+    var icons = { safe: '🟢', caution: '🟡', danger: '🔴', na: '⚪' };
+    var meta = LEVELS[v.level] || LEVELS.na;
+    var lines = [(icons[v.level] || '⚪') + ' ' + meta.text + ' — ' + (v.registrable || v.host || v.url || '') +
+      ' — الدرجة ' + (v.scannable === false ? '—' : v.score) + '/100'];
+    (v.reasons || []).forEach(function (r) {
+      if (r.weight > 0 && lines.length < 4) lines.push('• ' + r.text);
+    });
+    lines.push('فُحص عبر حصن: ' + ORIGIN);
+    return lines.join('\n');
+  }
+  $('shareBtn').addEventListener('click', function () {
+    if (!lastScan) return;
+    if (navigator.share) {
+      navigator.share({ title: 'حصن — نتيجة فحص الرابط', text: verdictText(lastScan) }).catch(function () {});
+    } else {
+      copyText(verdictText(lastScan), this);
+    }
+  });
+
+  $('reportBtn').addEventListener('click', function () {
+    if (!lastScan) return;
+    var self = this;
+    fetch(ORIGIN + '/api/report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url: lastScan.url,
+        score: lastScan.score,
+        level: lastScan.level,
+        source: $('sourceSel').value
+      })
+    }).then(function () {
+      self.textContent = 'تم الإبلاغ ✓';
+      setTimeout(function () { self.textContent = '🚩 الإبلاغ عن هذا الرابط'; }, 2000);
+    }).catch(function () {
+      self.textContent = 'تعذر الإرسال ✕';
+      setTimeout(function () { self.textContent = '🚩 الإبلاغ عن هذا الرابط'; }, 2000);
+    });
+  });
+  $('againBtn').addEventListener('click', function () {
+    $('verdict').classList.remove('show');
+    $('urlInput').value = '';
+    $('urlInput').focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  /* فحص تلقائي عند الوصول بـ /?url=...&source=... (يستخدمه زر المفضلة الذكي) */
+  var q = new URLSearchParams(location.search);
+  var auto = q.get('url');
+  if (auto) {
+    $('urlInput').value = auto;
+    var s = q.get('source');
+    if (s) $('sourceSel').value = s;
+    scan(auto, s || 'direct');
+  }
+
+  renderHist();
+
+  /* سطر الشفافية في التذييل: إصدار المحرك وحالة طبقة التحليل الذكي */
+  fetch(ORIGIN + '/api/health').then(function (r) { return r.json(); }).then(function (h) {
+    if (h && h.ok) {
+      $('engLine').textContent = 'المحرك v' + h.version +
+        (h.aiHook ? ' · طبقة التحليل الذكي: مفعّلة 🤖' : ' · فحص محلي فوري فقط');
+    }
+  }).catch(function () {});
+})();
+</script>
+</body>
+</html>

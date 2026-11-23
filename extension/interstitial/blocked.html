@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>تم حجب الرابط — حصن</title>
+<link rel="stylesheet" href="blocked.css">
+</head>
+<body>
+<main class="wrap">
+  <div class="icon">🧱</div>
+  <h1>جدار حصن أوقف وصولك إلى موقع خطير</h1>
+  <p class="lead">
+    يصنّف <b>حصن</b> الرابط التالي كموقع عالي الخطورة للاحتيال المالي،
+    وأوقف تحميله <b>قبل</b> وصول أي بيانات إليه.
+  </p>
+  <p class="wall-line" id="wallLine">…</p>
+
+  <div class="target-box">
+    <span class="lbl">الرابط المحجوب:</span>
+    <span id="targetUrl" class="target">…</span>
+  </div>
+
+  <div class="score-row">
+    <span id="scoreChip" class="chip">درجة الخطورة: —</span>
+    <span id="levelChip" class="chip">التصنيف: خطر</span>
+  </div>
+
+  <div class="panel">
+    <h2>أسباب التحذير</h2>
+    <ul id="reasons"></ul>
+  </div>
+
+  <div class="panel cmp-panel" id="comparePanel" style="display:none">
+    <h2>⚖️ المقارنة مع الموقع الرسمي</h2>
+    <div id="cmpBody"></div>
+  </div>
+
+  <div class="advice">
+    <h2>ماذا تفعل الآن؟</h2>
+    <ul>
+      <li>لا تُدخل أي بيانات بطاقة أو كلمات مرور أو رموز تحقق (OTP) في هذا الموقع.</li>
+      <li>إن كنت تتعامل مع بنك أو جهة حكومية، افتح موقعها الرسمي مباشرة بكتابة عنوانها بنفسك.</li>
+      <li>إن وصلتك روابط كهذه عبر رسالة أو إعلان، فهذا نمط شائع في محاولات الاحتيال.</li>
+      <li>أبلغ الجهات المختصة (الشرطة أو الجهة المقلَّدة) وبنكك فوراً عن هذه المحاولة.</li>
+    </ul>
+  </div>
+
+  <div class="actions">
+    <button id="backBtn" class="btn safe">العودة إلى الأمان</button>
+    <button id="reportBtn" class="btn warn">الإبلاغ كاحتيال مؤكد</button>
+    <button id="continueBtn" class="btn danger">متابعة على مسؤوليتي</button>
+  </div>
+  <p class="hint">الفحص تم محلياً على جهازك — لا تُرسل أي بيانات إلى أي طرف.</p>
+</main>
+<script src="blocked.js"></script>
+</body>
+</html>

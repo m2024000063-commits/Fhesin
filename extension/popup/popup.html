@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="popup.css">
+<title>حصن — جدار الفحص التلقائي</title>
+</head>
+<body>
+<header>
+  <img src="../icons/icon32.png" alt="" width="26" height="26">
+  <div>
+    <h1>حصن</h1>
+    <span id="ver" class="ver"></span>
+  </div>
+  <span id="statusDot" class="dot dot-on" title="الحماية مفعّلة"></span>
+</header>
+
+<!-- الفحص اليدوي -->
+<section class="card">
+  <label for="manualUrl">فحص رابط يدوياً (قبل فتحه):</label>
+  <div class="row">
+    <input id="manualUrl" type="text" placeholder="مثال: https://emiratesnbd-secure.com/login" spellcheck="false">
+    <button id="manualBtn" class="btn-primary">فحص</button>
+  </div>
+</section>
+
+<!-- نتيجة التبويب الحالي -->
+<section id="result" class="card result">
+  <div class="gauge-wrap">
+    <div id="gauge" class="gauge"><div class="gauge-hole"><span id="scoreNum">—</span></div></div>
+    <div class="gauge-side">
+      <div id="levelChip" class="chip">…</div>
+      <div id="hostLine" class="host">…</div>
+    </div>
+  </div>
+  <ul id="reasons"></ul>
+  <!-- المقارنة الفورية مع الموقع الرسمي عند اكتشاف انتحال (كانت غائبة كلياً هنا) -->
+  <div id="cmpCard" class="cmp" style="display:none">
+    <div class="cmp-title">⚖️ المقارنة مع الموقع الرسمي</div>
+    <div id="cmpRows"></div>
+    <a id="cmpLink" class="cmp-go" target="_blank" rel="noopener noreferrer"></a>
+  </div>
+  <div class="actions">
+    <button id="reportBtn" class="btn-ghost">الإبلاغ عن الرابط</button>
+    <button id="rescanBtn" class="btn-ghost">إعادة الفحص</button>
+  </div>
+</section>
+
+<!-- إحصاءات -->
+<section class="stats" id="stats">
+  <div class="stat"><b id="stTotal">0</b><span>فحص</span></div>
+  <div class="stat s-green"><b id="stSafe">0</b><span>آمن</span></div>
+  <div class="stat s-amber"><b id="stCaution">0</b><span>مشبوه</span></div>
+  <div class="stat s-red"><b id="stDanger">0</b><span>خطر</span></div>
+  <div class="stat s-red"><b id="stBlocked">0</b><span>حُجب</span></div>
+</section>
+
+<!-- الإعدادات -->
+<section class="card">
+  <h2>الإعدادات</h2>
+  <label class="switch-row"><input type="checkbox" id="setBlocking"><span>حجب الروابط الخطر تلقائياً</span></label>
+  <label class="switch-row"><input type="checkbox" id="setHardWall"><span>الجدار الصلب — حجب فوري على مستوى الشبكة للنطاقات الخطرة</span></label>
+  <label class="switch-row"><input type="checkbox" id="setScanSearch"><span>وسم نتائج البحث بشارات الفحص</span></label>
+  <label class="switch-row"><input type="checkbox" id="setSilentDots"><span>الوضع الصامت — نقطة 🟢/🔴 بجانب كل رابط قبل لمسه</span></label>
+  <label class="switch-row"><input type="checkbox" id="setCloud"><span>استخدام الخادم السحابي للفحص</span></label>
+  <label class="switch-row select-row">
+    <span>عنوان الخادم:</span>
+    <input id="cloudEndpoint" class="cloud-input" type="text" spellcheck="false" placeholder="https://your-app.vercel.app">
+  </label>
+  <p class="hint">انشر المستودع على Vercel ثم الصق رابط موقعك هنا (بدون /api/scan).</p>
+  <label class="switch-row select-row">
+    <span>وسم الروابط في الصفحات:</span>
+    <select id="setScanAll">
+      <option value="auto">تلقائي (الصفحات المحلية فقط)</option>
+      <option value="on">كل الصفحات</option>
+      <option value="off">معطل</option>
+    </select>
+  </label>
+</section>
+
+<footer>
+  <button id="dashBtn" class="btn-primary wide">لوحة مؤشرات التهديدات (Threat Intelligence)</button>
+</footer>
+
+<script src="popup.js"></script>
+</body>
+</html>
+

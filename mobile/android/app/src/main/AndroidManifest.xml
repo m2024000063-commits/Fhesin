@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  حصن (Hisn) — تطبيق أندرويد
+  البديل 2: «معترض الروابط الذكي» — التطبيق يسجل نفسه متصفحاً وسيطاً:
+  أي رابط يُضغط في واتساب/SMS/الإيميل يمر أولاً عبر InterceptorActivity
+  ليفحصه في أجزاء من الثانية؛ إن كان آمناً يُمرَّر فوراً إلى المتصفح الحقيقي،
+  وإن كان خبيثاً تُعرض شاشة تحذير حمراء ويُوقف الفتح.
+  البديل 3: «مراقب الإشعارات» — NotificationWatcher يراقب إشعارات الرسائل
+  فور وصولها ويفحص الروابط داخلها ويرسل تنبيهاً تحذيرياً قبل فتح الرسالة.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- البديل 3: صلاحية مراقبة الإشعارات — يمنحها المستخدم يدوياً من إعدادات النظام -->
+    <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+        tools:ignore="ProtectedPermissions"
+        xmlns:tools="http://schemas.android.com/tools" />
+
+    <application
+        android:label="@string/app_name"
+        android:icon="@drawable/ic_shield"
+        android:theme="@style/ThemeHisn"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:allowBackup="false">
+
+        <!-- ===== البديل 2: معترض الروابط (متصفح وسيط) =====
+             تصنيف «متصفح» يُفعَّل حين يعيّنه المستخدم افتراضياً من الإعدادات:
+             الإعدادات ← التطبيقات ← التطبيقات الافتراضية ← تطبيق المتصفح -->
+        <activity
+            android:name=".InterceptorActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:theme="@style/ThemeHisn.Transparent"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+            </intent-filter>
+        </activity>
+
+        <!-- شاشة التحذير الحمراء عند كشف رابط خبيث -->
+        <activity
+            android:name=".WarningActivity"
+            android:exported="false"
+            android:excludeFromRecents="true" />
+
+        <!-- ===== لوحة الإدارة الرئيسية ===== -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- ===== البديل 3: مراقب الإشعارات =====
+             يُفعَّل من: الإعدادات ← وصول الإشعارات ← حصن -->
+        <service
+            android:name=".NotificationWatcher"
+            android:exported="true"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>

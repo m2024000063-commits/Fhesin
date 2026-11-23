@@ -1,0 +1,93 @@
+/* درع السياق الاستباقي — لوحة مؤشرات التهديدات (ثيم داكن) */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+  background: #0a0f1e;
+  color: #e2e8f0;
+  direction: rtl;
+}
+.topbar {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 24px;
+  background: linear-gradient(90deg, #0b2447, #12305e);
+  border-bottom: 1px solid #1e3a5f;
+  flex-wrap: wrap;
+}
+.topbar h1 { font-size: 18px; margin: 0; }
+.sub { margin: 3px 0 0; font-size: 12px; color: #93b0d8; }
+.topbar-actions { margin-inline-start: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-light, .btn-danger-light {
+  border: 1px solid #2c4a7c; background: #12294d; color: #dbe7ff;
+  border-radius: 8px; padding: 7px 14px; font-size: 13px; cursor: pointer; font-family: inherit;
+}
+.btn-light:hover { background: #1a3560; }
+.btn-danger-light { border-color: #7f1d1d; color: #fecaca; background: #2a1010; }
+.btn-danger-light:hover { background: #3d1414; }
+
+main { padding: 20px 24px 40px; max-width: 1200px; margin: 0 auto; }
+
+.stat-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px; margin-bottom: 18px;
+}
+.stat-card {
+  background: #101a33; border: 1px solid #1e2f52; border-radius: 14px;
+  padding: 14px 16px; text-align: center;
+}
+.stat-card b { display: block; font-size: 26px; color: #fff; }
+.stat-card span { font-size: 12px; color: #8fa3c8; }
+.stat-card.green b { color: #4ade80; }
+.stat-card.amber b { color: #fbbf24; }
+.stat-card.red b { color: #f87171; }
+.stat-card.dark b { color: #93c5fd; }
+
+.two-col {
+  display: grid; grid-template-columns: 1fr 1.6fr; gap: 16px;
+  margin-bottom: 18px;
+}
+@media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+
+.panel {
+  background: #101a33; border: 1px solid #1e2f52; border-radius: 14px;
+  padding: 16px 18px; margin-bottom: 16px;
+}
+.panel h2 { font-size: 15px; margin: 0 0 10px; color: #cfe0ff; }
+.hint { font-size: 12px; color: #7e93ba; margin: 0 0 10px; }
+
+/* توزيع التصنيفات */
+.dist { display: flex; flex-direction: column; gap: 10px; }
+.dist-row { display: flex; align-items: center; gap: 10px; font-size: 12.5px; }
+.dist-label { width: 60px; flex: 0 0 auto; }
+.dist-bar { flex: 1; height: 14px; background: #0a1226; border-radius: 999px; overflow: hidden; }
+.dist-fill { height: 100%; border-radius: 999px; min-width: 2px; }
+.dist-num { width: 44px; text-align: left; flex: 0 0 auto; }
+
+/* الجداول */
+.tbl-scroll { overflow-x: auto; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.tbl th {
+  text-align: right; padding: 8px 10px; color: #9fb4d8;
+  border-bottom: 1px solid #24365c; white-space: nowrap; font-size: 12px;
+}
+.tbl td { padding: 8px 10px; border-bottom: 1px solid #16223d; vertical-align: top; }
+.tbl td.ltr { direction: ltr; text-align: left; word-break: break-all; color: #bcd3f5; }
+.chip { display: inline-block; padding: 2px 10px; border-radius: 999px; font-weight: 700; font-size: 11.5px; white-space: nowrap; }
+.chip.safe { background: #052e16; color: #4ade80; border: 1px solid #14532d; }
+.chip.caution { background: #422006; color: #fbbf24; border: 1px solid #713f12; }
+.chip.danger { background: #450a0a; color: #f87171; border: 1px solid #7f1d1d; }
+.chip.na { background: #1e293b; color: #94a3b8; }
+.action-tag { font-size: 11.5px; color: #93c5fd; }
+
+/* فلاتر */
+.filters { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.filter {
+  background: #0c152b; color: #9fb4d8; border: 1px solid #24365c;
+  border-radius: 999px; padding: 5px 16px; font-size: 12.5px; cursor: pointer; font-family: inherit;
+}
+.filter.active { background: #19376d; color: #fff; border-color: #2c4a7c; }
+.filter.f-red.active { background: #7f1d1d; }
+.filter.f-amber.active { background: #713f12; }
+.filter.f-green.active { background: #14532d; }
+
+.empty { color: #64748b; font-size: 13px; padding: 14px 4px; }

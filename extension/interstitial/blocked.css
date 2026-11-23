@@ -1,0 +1,94 @@
+/* درع السياق الاستباقي — صفحة الحجب */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+  direction: rtl;
+  color: #fff;
+  background: radial-gradient(1200px 600px at 50% -10%, #7f1d1d, #450a0a 55%, #1c0505);
+}
+.wrap { max-width: 680px; margin: 0 auto; padding: 48px 24px 40px; }
+.icon {
+  width: 84px; height: 84px; border-radius: 50%;
+  background: #dc2626; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px; font-weight: 800;
+  margin: 0 auto 18px;
+  box-shadow: 0 0 0 10px rgba(220,38,38,.15), 0 10px 40px rgba(0,0,0,.5);
+}
+h1 { text-align: center; font-size: clamp(20px, 4vw, 28px); margin: 0 0 12px; }
+.lead { text-align: center; font-size: 15px; line-height: 1.8; color: #fecaca; margin: 0 0 14px; }
+
+/* سطر شرح مصدر الحجب (كان بلا نمط في CSS ويبقى «…») */
+.wall-line {
+  text-align: center; font-size: 13px; line-height: 1.8; color: #fca5a5;
+  background: rgba(0,0,0,.25); border: 1px dashed #7f1d1d;
+  border-radius: 10px; padding: 10px 14px; margin: 0 0 18px;
+}
+
+.target-box {
+  background: rgba(0,0,0,.35);
+  border: 1px solid #7f1d1d;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 13px;
+  margin-bottom: 14px;
+  overflow-wrap: anywhere;
+}
+.target-box .lbl { color: #fca5a5; display: block; margin-bottom: 4px; }
+.target { direction: ltr; unicode-bidi: embed; color: #fff; font-family: Consolas, monospace; font-size: 12.5px; }
+
+.score-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 18px; flex-wrap: wrap; }
+.chip {
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 999px;
+  padding: 5px 16px;
+  font-size: 13px; font-weight: 700;
+}
+
+.panel, .advice {
+  background: rgba(0,0,0,.3);
+  border: 1px solid #7f1d1d;
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 14px;
+}
+.panel h2, .advice h2 { font-size: 15px; margin: 0 0 10px; color: #fecaca; }
+.panel ul, .advice ul { margin: 0; padding-inline-start: 22px; font-size: 13.5px; line-height: 1.9; color: #fde8e8; }
+.panel li::marker { color: #f87171; }
+
+/* ===== لوحة المقارنة الفورية مع الموقع الرسمي ===== */
+.cmp-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
+.cmp-tag { flex: 0 0 auto; font-size: 12px; font-weight: 700; color: #fca5a5; }
+.cmp-row.cmp-good .cmp-tag { color: #86efac; }
+.cmp-host {
+  direction: ltr; unicode-bidi: embed; flex: 1; min-width: 0;
+  font-family: Consolas, monospace; font-size: 13px; color: #fff;
+  background: rgba(0,0,0,.35); border: 1px solid #7f1d1d;
+  border-radius: 8px; padding: 6px 10px; overflow-wrap: anywhere;
+}
+.cmp-host mark { background: #dc2626; color: #fff; border-radius: 4px; padding: 0 3px; }
+.cmp-good .cmp-host mark { background: #16a34a; }
+.cmp-info { font-size: 12px; color: #fecaca; line-height: 1.8; margin: 8px 0 0; }
+.cmp-go {
+  display: inline-block; margin-top: 10px; font-size: 13px; font-weight: 700; color: #86efac;
+  border: 1px solid #16a34a66; background: #16a34a14; border-radius: 10px;
+  padding: 8px 14px; text-decoration: none; direction: ltr; unicode-bidi: embed;
+}
+.cmp-go:hover { background: #16a34a28; }
+
+.actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 22px; }
+.btn {
+  font-family: inherit; font-size: 14px; font-weight: 700;
+  border-radius: 12px; padding: 12px 22px; cursor: pointer; border: 1px solid;
+}
+.btn.safe { background: #16a34a; border-color: #16a34a; color: #fff; }
+.btn.safe:hover { background: #15803d; }
+.btn.warn { background: transparent; border-color: #fbbf24; color: #fbbf24; }
+.btn.warn:hover { background: rgba(251,191,36,.12); }
+.btn.danger { background: transparent; border-color: #fca5a5; color: #fca5a5; }
+.btn.danger:hover { background: rgba(252,165,165,.12); }
+.hint { text-align: center; font-size: 11.5px; color: #b98a8a; margin-top: 22px; }
+

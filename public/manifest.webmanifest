@@ -1,0 +1,17 @@
+{
+  "name": "حصن — جدار فحص الروابط",
+  "short_name": "حصن",
+  "description": "جدار فحص تلقائي بينك وبين الروابط الاحتيالية: مقارنة فورية مع المواقع الرسمية وحكم عربي واضح عبر iOS Shortcuts وإضافة Chrome",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/?src=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0f1e",
+  "theme_color": "#0a0f1e",
+  "icons": [
+    { "src": "icons/icon180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "icons/icon192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

@@ -1,0 +1,40 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.hisn.shield'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.hisn.shield"
+        minSdk 24          // Android 7.0 — يغطي الغالبية العظمى من الأجهزة
+        targetSdk 34
+        versionCode 1
+        versionName "2.3.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+}
+
+/*
+ * صفر تبعيات خارجية — كل شيء من android.* المدمج:
+ * لا AndroidX ولا OkHttp ولا Gson؛ الشبكة بـ HttpURLConnection والتحليل بـ org.json.
+ * هذا يجعل التطبيق صغيراً (< 1MB) وخالياً من أي طرف ثالث يقرأ بيانات الروابط.
+ */
+dependencies {
+}
